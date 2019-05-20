@@ -16,6 +16,7 @@ class FileExtractPlugin
   apply(compiler)
   {
     let files = {};
+    let filesDone = [];
 
     compiler.hooks.compilation.tap(
       this.pluginName, compilation =>
@@ -36,8 +37,10 @@ class FileExtractPlugin
               );
             }
 
-            if(shouldRun)
+            if(shouldRun && filesDone.indexOf(chunk.entryModule.resource) === -1)
             {
+              filesDone.push(chunk.entryModule.resource);
+
               let outputFilename = this.options.output.filename
                 || chunk.entryModule.resource.split(/[\\/]node_modules[\\/]/).pop();
               if(this.options.output.path)
