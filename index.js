@@ -15,11 +15,11 @@ class FileExtractPlugin
 
   apply(compiler)
   {
+    let files = {};
+
     compiler.hooks.compilation.tap(
       this.pluginName, compilation =>
       {
-        let files = {};
-
         compilation.hooks.chunkAsset.tap(
           this.pluginName, chunk =>
           {
@@ -56,30 +56,32 @@ class FileExtractPlugin
             }
           }
         );
+      }
+    );
 
-        compiler.hooks.emit.tap(
-          this.pluginName,
-          (compilation) =>
+    compiler.hooks.emit.tap(
+      this.pluginName,
+      (compilation) =>
+      {
+        Object.keys(files).forEach(
+          filename =>
           {
-            Object.keys(files).forEach(
-              filename =>
+            let source = files[filename];
+            compilation.assets[filename] = {
+              source: function ()
               {
-                let source = files[filename];
-                compilation.assets[filename] = {
-                  source: function ()
-                  {
-                    return source;
-                  },
-                  size: function ()
-                  {
-                    return source.length;
-                  }
-                };
+                return source;
+              },
+              size: function ()
+              {
+                return source.length;
               }
-            );
+            };
           }
         );
       }
     );
   }
 }
+
+module.exports = FileExtractPlugin;
