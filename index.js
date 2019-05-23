@@ -27,13 +27,12 @@ class FileExtractPlugin
             let shouldRun = true;
             if(this.options.match)
             {
-              shouldRun = false;
               if(!Array.isArray(this.options.match))
               {
                 this.options.match = [this.options.match];
               }
               this.options.match.forEach(
-                match => shouldRun = match.test(chunk.entryModule.resource)
+                match => shouldRun = shouldRun && match.test(chunk.entryModule.resource)
               );
             }
 
